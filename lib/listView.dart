@@ -1,4 +1,47 @@
 import 'package:flutter/material.dart';
+import 'Get.dart' as Get;
+
+Future<String> fetchData() async{
+  var city = Get.City();
+  var http = Get.Http();
+  var response = await http.body(city.url);
+  return response;
+}
+
+class GetCity extends StatefulWidget {
+  const GetCity({Key? key}) : super(key: key);
+
+  @override
+  State<GetCity> createState() => _GetCityState();
+}
+
+class _GetCityState extends State<GetCity> {
+  late Future<String> futureData;
+
+  @override
+  void initState(){
+    super.initState();
+    futureData = fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+        future: futureData,
+        builder: (context, snapshot){
+          if(snapshot.hasData){
+            String? str = snapshot.data;
+            Get.City city = Get.City.StrXml(str.toString());
+            return ListSearch("도시명", city.cityNameList);
+          }
+          else if(snapshot.hasError){
+            return Text('${snapshot.error}');
+          }
+          return const Center(child: CircularProgressIndicator(),);
+        }
+    );
+  }
+}
 
 class ListSearch extends StatefulWidget {
   String title;
