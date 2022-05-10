@@ -2,20 +2,57 @@ import 'package:flutter/material.dart';
 import 'Get.dart' as Get;
 
 Future<String> fetchData() async{
-  var city = Get.City();
+  var bus = Get.Bus(38010);
   var http = Get.Http();
-  var response = await http.body(city.url);
+  var response = await http.body(bus.url);
   return response;
 }
+
+class GetBus extends StatefulWidget {
+  const GetBus({Key? key}) : super(key: key);
+
+  @override
+  State<GetBus> createState() => _GetBusState();
+}
+
+class _GetBusState extends State<GetBus> {
+  late Future<String> futureData;
+
+  @override
+  void initState(){
+    super.initState();
+    futureData = fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+        future: futureData,
+        builder: (context, snapshot){
+          if(snapshot.hasData){
+            String? str = snapshot.data;
+            Get.Bus bus = Get.Bus(38010);
+            Get.Bus.StrXml(str.toString());
+            return ListSearch("버스번호", bus.routeNoList);
+          }
+          else if(snapshot.hasError){
+            return Text('${snapshot.error}');
+          }
+          return const Center(child: CircularProgressIndicator(),);
+        }
+    );
+  }
+}
+
 
 class GetCity extends StatefulWidget {
   const GetCity({Key? key}) : super(key: key);
 
   @override
-  State<GetCity> createState() => _GetCityState();
+  State<GetBus> createState() => _GetBusState();
 }
 
-class _GetCityState extends State<GetCity> {
+class _GetCityState extends State<GetBus> {
   late Future<String> futureData;
 
   @override

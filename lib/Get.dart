@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:xml/xml.dart';
 import 'API_KEYS.dart' as Key;
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 
 final serviceKey = Key.BUS_KEY;
 
@@ -101,6 +102,26 @@ class City{
     return -1;
   }
 }
+class Station{
+  Future<List> getNearby(double lati, double long) async {
+    final url = 'http://apis.data.go.kr/1613000/BusSttnInfoInqireService/getCrdntPrxmtSttnList?serviceKey=$serviceKey&pageNo=1&numOfRows=9999&_type=xml&gpsLati=$lati&gpsLong=$long';
+    Http http = Http();
+    var body = await http.body(url);
+    Xml xml = Xml.str(body);
+
+    List nameList = xml.elementsToList('nodenm'); //정류장 이름 ex:시티세븐
+    List numList = xml.elementsToList('nodeno'); //정류장 번호 ex:35132
+    List idList = xml.elementsToList('nodeid'); //정류장 id ex:CWB45625
+    List stationList = [];
+    int i = 0;
+    for(var id in idList){
+      var value = {'Name':nameList[i], 'Num':numList[i], 'Id':id};
+      stationList.add(value);
+      i++;
+    }
+    return stationList;
+  }
+}
 
 /*
 * 테스트 코드
@@ -125,5 +146,14 @@ void busTest(){
   print(bus.routeNo2Id(212));
 }
 void main(){
-  cityTest();
+  Station station = Station();
+  var nearby = station.getNearby(35.2552783,128.6427089);
+  nearby.then((value){
+    for(Map item in value){
+      var name = item['Name'];
+      var num = item['Num'];
+      var id = item['Id'];
+      print('정류장: $name, 번호: $num, ID: $id');
+    }
+  });
 }

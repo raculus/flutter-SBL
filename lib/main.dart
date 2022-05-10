@@ -26,7 +26,17 @@ class MyPage extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: GetCity(),
+      body: test(),
     );
   }
 }
+
+class test extends StatelessWidget {
+  const test({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
