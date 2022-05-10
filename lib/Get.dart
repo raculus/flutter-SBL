@@ -1,8 +1,22 @@
+import 'dart:convert';
 import 'package:xml/xml.dart';
-import 'package:untitled/HttpReq.dart';
 import 'API_KEYS.dart' as Key;
+import 'package:http/http.dart' as http;
 
 final serviceKey = Key.BUS_KEY;
+
+class Http{
+  Future<String> body(String url) async {
+    var response = await http.get(Uri.parse(url));
+    if(response.statusCode == 200){
+      return utf8.decode(response.bodyBytes);
+    }
+    else{
+      print('http response code is not 200');
+    }
+    return '';
+  }
+}
 
 class Xml{
   XmlDocument xmlDocument = XmlDocument();
@@ -94,7 +108,7 @@ class City{
 void cityTest(){
   City city = City();
 
-  var strFuture = body(city.url);
+  var strFuture = Http().body(city.url);
   strFuture.then((String result){
     var strXml = result;
     City city = City.StrXml(strXml);
