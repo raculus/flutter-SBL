@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'API_KEYS.dart' as Key;
 import 'package:geolocator/geolocator.dart';
@@ -9,7 +10,7 @@ import 'package:xml/xml.dart';
 String pos = '127.898283,34.8373363';
 String pos2 = '128.6427089,35.2552783';
 
-void getPlaceAddress(double lat, double lng) async{
+Future<String?> getPlaceAddress(double lat, double lng) async{
   final pos = '$lat,$lng';
   final url = 'https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/gc?coords=$pos&output=xml';
   final response = await fetchPost(url);
@@ -18,9 +19,18 @@ void getPlaceAddress(double lat, double lng) async{
   xmlDocument = XmlDocument.parse(response);
   
   var area2 = xmlDocument.findAllElements('area2').first;
-  var name = area2.firstChild;
+  XmlNode? name = area2.firstChild;
   print(pos+' is ');
-  print(name?.text.toString());
+  String city = name!.text.toString();
+
+  String pettern = '^[가-힣]{2,5}[시군도]';
+  RegExp regExp = RegExp(pettern);
+  var result = regExp.stringMatch(city);
+  
+  regExp = RegExp('[시군도]\$');
+  result = result?.replaceFirst(regExp, '');
+  print(result);
+  return result;
 }
 
 Future<String> fetchPost(String url) async {
@@ -50,5 +60,5 @@ void testGps(){
 }
 
 void main(){
-  getPlaceAddress(128.6427089,35.2552783);
+  getPlaceAddress(127.9849295,37.4917566);
 }
