@@ -89,6 +89,9 @@ class City{
     cityCodeList = xml.elementsToList('citycode');
     cityNameList = xml.elementsToList('cityname');
   }
+  getCity(){
+
+  }
   /*
   * 도시명 (예시: 창원, 창원시)을 받아
   * 지역명에 맞는 도시코드 반환
